@@ -1,3 +1,5 @@
+# Snake game in X86-64 assembly by Andreas Bülling 2013
+
 
 .text
 
@@ -124,10 +126,10 @@ right:
 
 .data	                        # data section
 	
-sw:				# window width
-	.quad	256
-sh:				# window height
-	.quad	256
+sw:				# game area width
+	.quad	64
+sh:				# game area height
+	.quad	64
 dirx:				# current x direction
 	.quad	1
 diry:				# current y direction
