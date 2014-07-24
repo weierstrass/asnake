@@ -1,10 +1,10 @@
 
-.text                           # section declaration
+.text
 
 .global _start              	# make _start label visible to linker
 
 _start:				# main label
-
+	
 				# init SDL
 	mov	sw, %rdi	# arg 1: width
 	mov	sh, %rsi	# arg 2: height
@@ -32,7 +32,7 @@ event:
 				# handle quit event
 	mov	$12, %rdx	# 12 = quit
 	cmp	%rcx, %rdx	# if equal
-	je	exit		# jump to exit
+	je	exit		# exit program
 
 				# handle key press events
 	mov	8(%rsp), %ebx	# store key code in ebx
@@ -44,6 +44,7 @@ event:
 	je	right
 	cmp	$276, %ebx	# left pressed ?
 	je	left
+
 done:			
 	add	$32, %rsp	# restore stack pointer
 
@@ -56,9 +57,10 @@ done:
 				# compute segment to visit next
 	movb	(%rbp), %dl	# x coordinate
 	add	dirx, %dl
+	and	$63, %dl	# mask 
 	movb	-1(%rbp), %dh	# y coordinate
 	add	diry, %dh
-
+	and	$63, %dh	# mask
 				# check if the snake is about to
 				# eat an apple
 	movw	-70(%rbp), %ax 	# load apple into %ax
@@ -67,6 +69,8 @@ done:
 	add	$1, -72(%rbp)	# add snake length by one
 	imul	ra, %ax		# generate new 'random' apple by LCG:
 	add	rc, %ax		# r_next = ra * r_prev + rc
+	and	$63, %al
+	and 	$63, %ah	
 	movw	%ax, -70(%rbp)	# store new apple
 
 noeat:	
@@ -129,13 +133,14 @@ right:
 #  	call 	printf		# call printf in clib
 #  	ret			# return
 
-ticks:				# get current tick, 64 bit
-	xor     %eax, %eax
-        cpuid
-        rdtsc
-	shl 	$32, %rdx
-	or 	%rdx, %rax
-	ret
+;; ticks:				# get current tick, 64 bit
+;; 	xor     %eax, %eax
+;;         cpuid
+;;         rdtsc
+;; 	shl 	$32, %rdx
+;; 	or 	%rdx, %rax
+;; 	ret
+
 .data	                        # data section
 
 clabel:

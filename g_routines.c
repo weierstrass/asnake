@@ -3,14 +3,14 @@
 #include "SDL/SDL_main.h"
 #include "SDL/SDL.h"
 
-#define PM 3 /* Pixel magnifier */
+#define PM 4 /* Pixel magnifier */
 #define PMW 0.5 /* Pixel magnifier */
 
 SDL_Surface *screen;
 
 void g_init(int w, int h){
   SDL_Init( SDL_INIT_EVERYTHING );
-  screen = SDL_SetVideoMode( w * PM, h * PM, 32, SDL_SWSURFACE );
+  screen = SDL_SetVideoMode( w, h, 32, SDL_SWSURFACE );
 
   SDL_WM_SetCaption("Assembler snake", "Assembler snake");
   printf("init graphics\n");
@@ -32,6 +32,7 @@ void g_draw(unsigned char *arr, unsigned char len){
   }
   
   // draw apple
+  printf("apple (%d, %d)\n", *(arr - 70), *(arr - 69)); 
   r.x = *(arr - 70) * PM;
   r.y = *(arr - 69) * PM;
   SDL_FillRect(screen, &r, 0xff0000);
