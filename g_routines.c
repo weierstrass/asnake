@@ -32,9 +32,9 @@ void g_draw(unsigned char *arr, unsigned char len){
   }
   
   // draw apple
-  printf("apple (%d, %d)\n", *(arr - 70), *(arr - 69)); 
-  r.x = *(arr - 70) * PM;
-  r.y = *(arr - 69) * PM;
+  printf("apple (%d, %d)\n", *(arr - 66), *(arr - 65)); 
+  r.x = *(arr - 66) * PM;
+  r.y = *(arr - 65) * PM;
   SDL_FillRect(screen, &r, 0xff0000);
 
   SDL_Flip( screen );

@@ -12,66 +12,61 @@ _start:				# main label
 	
 	push	%rbp		# set up stack base pointer
 	mov	%rsp, %rbp
-	sub	$64, %rsp	# make space on the stack for the
-				# snake array, 64 byte -> 32 segments
-	push	$-1		# extra quad for apple -70 and len -72
-	movw	$0x0a0b,-70(%rbp) 	# add first apple
-	movw	$1, -72(%rbp)		# set start length to 1
+	sub	$68, %rsp	# make space on the stack for the
+				# snake array, 64 bytes -> 32 segments
+				# 2 bytes for apple + 2 bytes length
+	movw	$0x0a0b, -66(%rbp) 	# add first apple
+	movw	$4, -68(%rbp)		# set start length to 1
 	movw	$0x0a0a, -1(%rbp)	# start (x, y) = (10, 10)
 	
 run:					
 	call 	SDL_GetTicks	
 	push	%rax		# store loop counter
 
-event:	
-	sub	$32, %rsp	# make space for the event struct
-	lea	(%rsp), %rdi	# pass stack pointer to pollevent
-	call 	SDL_PollEvent	# returns 1 if events to poll (%rax)
-	movzb	(%rsp), %rcx	# event.type
+event:
+				# poll for new user interaction
+	sub	$32, %rsp	  # make space for the event struct
+	lea	(%rsp), %rdi	  # arg 1: event struct
+	call 	SDL_PollEvent	  # returns 1 if events to poll -> %rax
+	movzb	(%rsp), %rcx	  # event.type -> %rcx
 	
 				# handle quit event
-	mov	$12, %rdx	# 12 = quit
-	cmp	%rcx, %rdx	# if equal
-	je	exit		# exit program
+	mov	$12, %rdx	  # 12 = quit
+	cmp	%rcx, %rdx	  # if equal
+	je	exit		  # exit program
 
 				# handle key press events
-	mov	8(%rsp), %ebx	# store key code in ebx
-	cmp	$274, %ebx	# down pressed ?
+	mov	8(%rsp), %ebx	  # store key code in ebx
+	cmp	$274, %ebx	  # down pressed ?
 	je	down
-	cmp	$273, %ebx	# up pressed ?
+	cmp	$273, %ebx	  # up pressed ?
 	je	up
-	cmp	$275, %ebx	# right pressed ?
+	cmp	$275, %ebx	  # right pressed ?
 	je	right
-	cmp	$276, %ebx	# left pressed ?
+	cmp	$276, %ebx	  # left pressed ?
 	je	left
 
-done:			
+done:
 	add	$32, %rsp	# restore stack pointer
 
-				# check if there are more events to
-				# be polled
-	mov	$1, %rdx	
-	cmp	$1, %rax 	# if rax == 1 there are more events
-	je	event		# poll next event
-
-				# compute segment to visit next
-	movb	(%rbp), %dl	# x coordinate
-	add	dirx, %dl
-	and	$63, %dl	# mask 
-	movb	-1(%rbp), %dh	# y coordinate
-	add	diry, %dh
-	and	$63, %dh	# mask
+				# determine segment to visit next
+	movb	(%rbp), %dl	  # x coordinate -> %dl
+	add	dirx, %dl	  # compute new x coord
+	and	$63, %dl	  # mask 
+	movb	-1(%rbp), %dh	  # y coordinate -> %dh
+	add	diry, %dh	  # compute new y coord
+	and	$63, %dh	  # mask
 				# check if the snake is about to
 				# eat an apple
-	movw	-70(%rbp), %ax 	# load apple into %ax
+	movw	-66(%rbp), %ax 	# load apple -> %ax
 	cmp	%ax, %dx	# compare apple with next segment
 	jne 	noeat		# if not on apple skip the following
-	add	$1, -72(%rbp)	# add snake length by one
+	add	$1, -68(%rbp)	# add snake length by one
 	imul	ra, %ax		# generate new 'random' apple by LCG:
 	add	rc, %ax		# r_next = ra * r_prev + rc
 	and	$63, %al
 	and 	$63, %ah	
-	movw	%ax, -70(%rbp)	# store new apple
+	movw	%ax, -66(%rbp)	# store new apple
 
 noeat:	
 				# move snake one segment
@@ -90,7 +85,7 @@ shift:
 	
 				# draw content
 	mov	%rbp, %rdi	# arg 1: snake array
-	movzb	-72(%rbp), %rsi	# arg 2: length
+	movzb	-68(%rbp), %rsi	# arg 2: length
 	call 	g_draw
 				# regulate frame rate
 	call 	SDL_GetTicks
@@ -125,41 +120,20 @@ right:
 	movq	$1, dirx
 	movq	$0, diry
 	jmp	done
-	
-# printxy:	
-#  	mov    	$clabel,%rdi	# arg 1: format label
-#  	mov   	xc,%rsi        	# arg 2: first digit
-#  	mov   	yc,%rdx    	# arg 3: second digit
-#  	call 	printf		# call printf in clib
-#  	ret			# return
 
-;; ticks:				# get current tick, 64 bit
-;; 	xor     %eax, %eax
-;;         cpuid
-;;         rdtsc
-;; 	shl 	$32, %rdx
-;; 	or 	%rdx, %rax
-;; 	ret
 
 .data	                        # data section
-
-clabel:
-	.asciz	"(%d, %d)\n"	# coordinate label
 	
-sw:
+sw:				# window width
 	.quad	256
-sh:
+sh:				# window height
 	.quad	256
-
-dirx:
+dirx:				# current x direction
 	.quad	1
-diry:
+diry:				# current y direction
 	.quad	0	
-sl:
-	.quad	64
 				# constants for generating 'random' numbers
 ra:
-	.long	1664525		# multiplier
+	.long	1664525		  # multiplier
 rc:
-	.long	1013904223	# increment
-	
+	.long	1013904223	  # increment
