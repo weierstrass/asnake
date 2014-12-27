@@ -4,11 +4,17 @@ ASnake
 A simple snake game implemented in x86-64 Assembly. The graphics is 
 done using SDL routines therefore libsdl is needed when compiling.
 
+![ASnake](demo.gif?raw=true "ASnake")
+
 compile with:
-$ make
+```bash
+make
+```
 
 and run with:
-$ ./a.out
+```bash
+./a.out
+```
 
 A video of a user enjoying the game :)
 
