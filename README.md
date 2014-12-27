@@ -6,15 +6,15 @@ done using SDL routines.
 
 ![ASnake](demo.gif?raw=true "ASnake")
 
-dependencies:
+**dependencies:**
 ```bash
 libsdl
 ```
-compile and link:
+**compile and link:**
 ```bash
 make
 ```
-run:
+**run:**
 ```bash
 ./a.out
 ```
