@@ -1,7 +1,7 @@
 ASnake
 ======
 
-A simple snake game implemented in x86-64 Assembly. The graphics is 
+Snake game implemented in x86-64 Assembly. The graphics is 
 done using SDL routines.
 
 ![ASnake](demo.gif?raw=true "ASnake")
