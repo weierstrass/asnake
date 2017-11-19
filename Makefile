@@ -1,6 +1,6 @@
 
 
-SRCDIR = .
+SRCDIR = src
 OBJDIR = build
 
 VPATH = $(SRCDIR)
